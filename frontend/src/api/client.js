@@ -21,7 +21,8 @@ export async function api(method, path, body, opts = {}) {
   const config = { method, headers };
   if (body != null && method !== 'GET') config.body = JSON.stringify(body);
   const res = await fetch(url, config);
-  const data = await res.json().catch(() => ({}));
+  const text = await res.text();
+  const data = text ? (() => { try { return JSON.parse(text); } catch { return {}; } })() : {};
   if (!res.ok) {
     const err = new Error(data.message || 'Request failed');
     err.status = res.status;
